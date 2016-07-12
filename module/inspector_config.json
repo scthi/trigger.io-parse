@@ -14,16 +14,9 @@
 			}
 		}
 	},
-	"modules": {
-		"facebook": {
-			"version": "2.14",
-			"config": {
-				"appid": "617039718370339",
-				"displayName": "Trigger.io Inspector"
-			}
-		}
-	},
-	"core": {
+    "modules": {
+    },
+    "core": {
         "android": {
             "package_name": "io.trigger.forge.android.inspector"
         }
