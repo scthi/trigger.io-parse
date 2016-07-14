@@ -14,11 +14,11 @@
 			}
 		}
 	},
-    "modules": {
-    },
-    "core": {
-        "android": {
-            "package_name": "io.trigger.forge.android.inspector"
-        }
-    }
+	"modules": {
+	},
+	"core": {
+		"android": {
+			"package_name": "io.trigger.forge.android.inspector"
+		}
+	}
 }
