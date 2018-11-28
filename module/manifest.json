@@ -1,9 +1,14 @@
 {
-	"changes": "* Updated Parse Android and iOS SDK to v1.13.1 supporting selfhosted ParserServers\n* Removed Facebook dependency",
-	"dependencies": {},
-	"description": "Parse.com configuration to enable push notifications.\n\nThe parse module uses the Parse.com SDK to allow for native push notifications.",
-	"min_platform_version": "v2.4.5",
-	"namespace": "parse",
-	"platform_version": "v2.4.5",
-	"version": "2.13"
+    "changes": "* Fixed: Android P does not support the `com.google.android.c2dm.intent.REGISTRATION` intent for `GcmBroadcastReceiver`.",
+    "dependencies": {
+        "bolts": {
+            "minimum_version": "1.6.0",
+            "maximum_version": "1.6.0"
+        }
+    },
+    "description": "Parse.com configuration to enable push notifications.\n\nThe parse module uses the Parse.com SDK to allow for native push notifications.",
+    "min_platform_version": "v2.7.2",
+    "namespace": "parse",
+    "platform_version": "v2.7.2",
+    "version": "2.21"
 }
