@@ -191,7 +191,13 @@
     { "do": { "android_add_proguard_rule": "-dontwarn com.parse.**" } },
     { "do": { "android_add_proguard_rule": "-keep class com.parse.** { *; }" } },
     { "do": {
-        "android_add_gradle_dependency": "com.google.android.gms:play-services-gcm:16.0.0"
+        "android_add_gradle_dependency": "com.google.firebase:firebase-messaging:17.3.0"
+    } },
+    { "do": {
+        "android_add_gradle_dependency": "com.github.parse-community.Parse-SDK-Android:parse:1.18.5"
+    } },
+    { "do": {
+        "android_add_gradle_dependency": "com.github.parse-community.Parse-SDK-Android:fcm:1.18.5"
     } },
     { "do": {
         "android_add_gradle_dependency": "com.parse:parse-android:1.16.7"

@@ -31,7 +31,7 @@ public class ForgePushBroadcastReceiver extends ParsePushBroadcastReceiver {
     private static final String notificationChannelId = "default";
     private static final String notificationChannelDescription = "Default";
 
-    static ArrayList<HashMap<String, String>> history = new ArrayList<HashMap<String, String>>();
+    static ArrayList<HashMap<String, String>> history = new ArrayList<>();
 
     private boolean isUpdateNotificationsFeature() {
         JsonObject config = ForgeApp.configForModule(Constant.MODULE_NAME);
@@ -104,7 +104,7 @@ public class ForgePushBroadcastReceiver extends ParsePushBroadcastReceiver {
     protected void buildAndShowUpdatableNotification(Context context, Intent intent) {
         JSONObject pushData = this.getPushData(intent);
         if (pushData != null && (pushData.has("alert") || pushData.has("title"))) {
-            HashMap<String, String> message = new HashMap<String, String>();
+            HashMap<String, String> message = new HashMap<>();
             message.put("alert", pushData.optString("alert", "Notification received."));
             message.put("title", pushData.optString("title", ManifestInfo.getDisplayName(context)));
             history.add(message);
