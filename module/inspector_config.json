@@ -12,7 +12,6 @@
                 "96": "fixtures/parse/icons/96.png",
                 "notification_icon": "custom_push_icon",
                 "background-color": "#5555ff",
-                "GCMsenderID": "677378418801",
                 "updateNotifications": true,
                 "showNotificationsWhileVisible": true
             }
