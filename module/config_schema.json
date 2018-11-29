@@ -38,6 +38,14 @@
 			"additionalProperties": false,
 			"description": "Android specific settings",
 			"properties": {
+				"google_services_json": {
+					"_order": 19,
+					"required": true,
+					"description": "google-services.json from FCM Project Settings",
+					"type": "string",
+					"title": "google-services.json",
+					"_filepicker": true
+				},		
 				"updateNotifications": {
 					"_order": 20,
 					"required": false,

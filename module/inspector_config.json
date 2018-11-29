@@ -5,6 +5,7 @@
             "server": "http://docker.trigger.io:1337/parse/",
             "applicationId": "45732VjSzMiN8HN90ztWcSeEl05T92XUrE70MJgI",
             "android": {
+                "google_services_json": "fixtures/sb_parse/google-services.json",
                 "24": "fixtures/sb_parse/icons/24.png",
                 "36": "fixtures/sb_parse/icons/36.png",
                 "48": "fixtures/sb_parse/icons/48.png",

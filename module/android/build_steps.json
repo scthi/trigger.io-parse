@@ -2,6 +2,15 @@
     {
         "do": {
             "copy_file_from_src": {
+                "filename": "{{modules.sb_parse.config.android.google_services_json}}",
+                "dest": "google-services.json"
+            }
+        }
+    },
+
+    {
+        "do": {
+            "copy_file_from_src": {
                 "filename": "{{modules.sb_parse.config.android.24}}",
                 "dest": "res/drawable-mdpi-v4/custom_push_icon.png"
             }
