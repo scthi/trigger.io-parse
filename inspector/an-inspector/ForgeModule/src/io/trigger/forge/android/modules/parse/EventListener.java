@@ -2,6 +2,7 @@ package io.trigger.forge.android.modules.parse;
 
 import android.content.Intent;
 
+import com.google.firebase.FirebaseOptions;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.parse.Parse;
@@ -40,6 +41,15 @@ public class EventListener extends ForgeEventListener {
         final String GCMSenderId = (config.has("android") && config.get("android").getAsJsonObject().has("GCMsenderID"))
             ? config.get("android").getAsJsonObject().get("GCMsenderID").getAsString()
             : null;
+
+        
+        FirebaseOptions.Builder builder = new FirebaseOptions.Builder()
+                //.setProjectId("")
+                .setApplicationId("1:545578024019:android:b3b93ea3cfe98586")
+                .setApiKey("AIzaSyCmBw72yy_2RhxPRHipqsq4hvpIy7VtnQM")
+                //.setGcmSenderId(GCMSenderId)
+                ;
+
 
         final Parse.Configuration configuration = new Parse.Configuration.Builder(ForgeApp.getApp())
             .server(server)

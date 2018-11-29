@@ -67,6 +67,21 @@
         "do": {
             "android_add_to_application_manifest": {
                 "element": {
+                    "tag": "provider",
+                    "attributes": {
+                        "android:name": "com.google.firebase.provider.FirebaseInitProvider",
+                        "android:authorities": "${applicationId}.firebaseinitprovider",
+                        "tools:node": "remove"
+                    }
+                }
+            }
+        }
+    },
+
+    {
+        "do": {
+            "android_add_to_application_manifest": {
+                "element": {
                     "tag": "service",
                     "attributes": {
                         "android:name": "com.parse.fcm.ParseFirebaseInstanceIdService",
