@@ -2,7 +2,7 @@
     {
         "do": {
             "copy_file_from_src": {
-                "filename": "{{modules.parse.config.android.24}}",
+                "filename": "{{modules.sb_parse.config.android.24}}",
                 "dest": "res/drawable-mdpi-v4/custom_push_icon.png"
             }
         }
@@ -11,7 +11,7 @@
     {
         "do": {
             "copy_file_from_src": {
-                "filename": "{{modules.parse.config.android.36}}",
+                "filename": "{{modules.sb_parse.config.android.36}}",
                 "dest": "res/drawable-hdpi-v4/custom_push_icon.png"
             }
         }
@@ -19,7 +19,7 @@
     {
         "do": {
             "copy_file_from_src": {
-                "filename": "{{modules.parse.config.android.48}}",
+                "filename": "{{modules.sb_parse.config.android.48}}",
                 "dest": "res/drawable-xhdpi-v4/custom_push_icon.png"
             }
         }
@@ -27,7 +27,7 @@
     {
         "do": {
             "copy_file_from_src": {
-                "filename": "{{modules.parse.config.android.72}}",
+                "filename": "{{modules.sb_parse.config.android.72}}",
                 "dest": "res/drawable-xxhdpi-v4/custom_push_icon.png"
             }
         }
@@ -35,7 +35,7 @@
     {
         "do": {
             "copy_file_from_src": {
-                "filename": "{{modules.parse.config.android.96}}",
+                "filename": "{{modules.sb_parse.config.android.96}}",
                 "dest": "res/drawable-xxxhdpi-v4/custom_push_icon.png"
             }
         }
@@ -47,7 +47,7 @@
                     "tag": "meta-data",
                     "attributes": {
                         "android:name": "com.parse.push.notification_icon",
-                        "android:resource": "@drawable/{{modules.parse.config.android.notification_icon}}"
+                        "android:resource": "@drawable/{{modules.sb_parse.config.android.notification_icon}}"
                     }
                 }
             }
