@@ -42,11 +42,14 @@ public class EventListener extends ForgeEventListener {
             ? config.get("android").getAsJsonObject().get("GCMsenderID").getAsString()
             : null;
 
-        
+        final JsonObject firebaseConfig = config.has("firebase") ? config.get("firebase").getAsJsonObject() : new JsonObject();
+        final String firebaseApiKey = firebaseConfig.has("apiKey") ? config.get("apiKey").getAsString() : null;
+        final String firebaseAppId = firebaseConfig.has("applicationId") ? config.get("applicationId").getAsString() : null;
+
         FirebaseOptions.Builder builder = new FirebaseOptions.Builder()
                 //.setProjectId("")
-                .setApplicationId("1:545578024019:android:b3b93ea3cfe98586")
-                .setApiKey("AIzaSyCmBw72yy_2RhxPRHipqsq4hvpIy7VtnQM")
+                .setApplicationId(firebaseAppId)
+                .setApiKey(firebaseApiKey)
                 //.setGcmSenderId(GCMSenderId)
                 ;
 

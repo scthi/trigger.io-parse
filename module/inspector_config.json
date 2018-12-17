@@ -5,7 +5,6 @@
             "server": "http://docker.trigger.io:1337/parse/",
             "applicationId": "45732VjSzMiN8HN90ztWcSeEl05T92XUrE70MJgI",
             "android": {
-                "google_services_json": "fixtures/sb_parse/google-services.json",
                 "24": "fixtures/sb_parse/icons/24.png",
                 "36": "fixtures/sb_parse/icons/36.png",
                 "48": "fixtures/sb_parse/icons/48.png",
@@ -14,8 +13,12 @@
                 "notification_icon": "custom_push_icon",
                 "background-color": "#5555ff",
                 "updateNotifications": true,
-                "showNotificationsWhileVisible": true
-            }
+                "showNotificationsWhileVisible": true,
+                "firebase": {
+                    "apiKey": "AIzaSyCmBw72yy_2RhxPRHipqsq4hvpIy7VtnQM",
+                    "applicationId": "1:545578024019:android:b3b93ea3cfe98586"
+                }
+            },
         }
     },
     "modules": {
