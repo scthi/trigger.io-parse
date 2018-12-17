@@ -38,6 +38,13 @@
 			"additionalProperties": false,
 			"description": "Android specific settings",
 			"properties": {
+				"GCMsenderID": {
+					"_order": 10,
+					"required": false,
+					"description": "One or multiple (comma-seperated) own GCM sender IDs to be used for GCM registration.",
+					"type": "string",
+					"title": "GCM sender ID"
+				},
 				"updateNotifications": {
 					"_order": 20,
 					"required": false,
