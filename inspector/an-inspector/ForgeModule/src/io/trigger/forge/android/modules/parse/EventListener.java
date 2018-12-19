@@ -19,6 +19,7 @@ import io.trigger.forge.android.core.ForgeLog;
 public class EventListener extends ForgeEventListener {
     @Override
     public void onApplicationCreate() {
+        ForgeLog.d("com.parse.push onApplicationCreate");
         final JsonObject config = ForgeApp.configForPlugin(Constant.MODULE_NAME);
 
         String server = config.has("server")
@@ -38,15 +39,20 @@ public class EventListener extends ForgeEventListener {
             ? ForgeApp.configForPlugin(Constant.MODULE_NAME).get("clientKey").getAsString()
             : null;
 
-        final String GCMSenderId = (config.has("android") && config.get("android").getAsJsonObject().has("GCMsenderID"))
-            ? config.get("android").getAsJsonObject().get("GCMsenderID").getAsString()
-            : null;
+        final JsonObject androidConfig =  config.has("android") ? config.get("android").getAsJsonObject() : new JsonObject();
+        final JsonObject firebaseConfig = androidConfig.has("firebase") ? androidConfig.get("firebase").getAsJsonObject() : new JsonObject();
 
-        
+        final String GCMSenderId = androidConfig.has("GCMsenderID") ? androidConfig.get("GCMsenderID").getAsString() : null;
+
+        final String firebaseApiKey = firebaseConfig.has("apiKey") ? firebaseConfig.get("apiKey").getAsString() : null;
+        final String firebaseAppId = firebaseConfig.has("applicationId") ? firebaseConfig.get("applicationId").getAsString() : null;
+
+        ForgeLog.d("Firebase config set as:" + firebaseConfig.toString());
+
         FirebaseOptions.Builder builder = new FirebaseOptions.Builder()
                 //.setProjectId("")
-                .setApplicationId("1:545578024019:android:b3b93ea3cfe98586")
-                .setApiKey("AIzaSyCmBw72yy_2RhxPRHipqsq4hvpIy7VtnQM")
+                .setApplicationId(firebaseAppId)
+                .setApiKey(firebaseApiKey)
                 //.setGcmSenderId(GCMSenderId)
                 ;
 
