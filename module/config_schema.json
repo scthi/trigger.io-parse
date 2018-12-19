@@ -107,14 +107,14 @@
 				}
 				"firebase": {
 					"title": "Firebase",
-					"_order": 50,
+					"_order": 60,
 					"required": false,
 					"type": "object",
 					"additionalProperties": false,
 					"description": "Firebase specific settings",
 					"properties": {
 						"applicationId": {
-							"_order": 51,
+							"_order": 50,
 							"type": "string",
 							"required": false,
 							"title": "Application ID",
