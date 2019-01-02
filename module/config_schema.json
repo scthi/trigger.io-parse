@@ -104,7 +104,7 @@
 					"required": false,
 					"type": "string",
 					"_filepicker": true
-				}
+				},
 				"firebase": {
 					"title": "Firebase",
 					"_order": 60,
@@ -124,7 +124,7 @@
 							"_order": 51,
 							"type": "string",
 							"required": false,
-							"title": "API Key",
+							"title": "API Key"
 						}
 					}
 				}
