@@ -1,8 +1,15 @@
 package io.trigger.forge.android.modules.parse;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.parse.Parse;
@@ -19,56 +26,83 @@ import io.trigger.forge.android.core.ForgeLog;
 public class EventListener extends ForgeEventListener {
     @Override
     public void onApplicationCreate() {
-        ForgeLog.d("com.parse.push onApplicationCreate");
-        final JsonObject config = ForgeApp.configForPlugin(Constant.MODULE_NAME);
+        try {
+            ForgeLog.d("com.parse.push onApplicationCreate");
 
-        String server = config.has("server")
-            ? config.get("server").getAsString()
-            : "https://api.parse.com/1/";
+            // build configurations (fail fast if something is wrong)
+            final JsonObject config = ForgeApp.configForPlugin(Constant.MODULE_NAME);
+            final Context appContext = ForgeApp.getApp();
+            final FirebaseOptions firebaseOptions = createFirebaseOptions(config);
+            final Parse.Configuration parseConfig = createParseConfig(config, appContext);
 
-        // interim workaround for: https://github.com/ParsePlatform/Parse-SDK-Android/pull/436
-        if (!server.endsWith("/")) {
-            server += "/";
+            // init Firebase and wait until deviceToken is available
+            FirebaseApp firebaseApp = FirebaseApp.initializeApp(ForgeApp.getApp(), firebaseOptions);
+            Task<InstanceIdResult> instanceIdTask = FirebaseInstanceId.getInstance().getInstanceId();
+            instanceIdTask.addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    // the deviceToken is available -> init parse
+                    ForgeLog.d("com.parse.push obtained deviceToken: " + task.getResult().getToken());
+                    initParse(parseConfig);
+                }
+            });
+
+        } catch (Exception ex) {
+            // In case of unexpected exception, we want to log it and pass it up
+            ForgeLog.e("com.parse.push onApplicationCreate failed: " + ex);
+            throw ex;
         }
+    }
 
-        final String applicationId = config.has("applicationId")
-            ? config.get("applicationId").getAsString()
-            : "";
-
-        final String clientKey = config.has("clientKey")
-            ? ForgeApp.configForPlugin(Constant.MODULE_NAME).get("clientKey").getAsString()
-            : null;
-
-        final JsonObject androidConfig =  config.has("android") ? config.get("android").getAsJsonObject() : new JsonObject();
+    private FirebaseOptions createFirebaseOptions(final JsonObject config) {
+        final JsonObject androidConfig = config.get("android").getAsJsonObject();
         final JsonObject firebaseConfig = androidConfig.has("firebase") ? androidConfig.get("firebase").getAsJsonObject() : new JsonObject();
 
-        final String GCMSenderId = androidConfig.has("GCMsenderID") ? androidConfig.get("GCMsenderID").getAsString() : null;
+        if (!firebaseConfig.has("apiKey")) {
+            throw new IllegalStateException("'android.firebase.apiKey' is missing");
+        }
+        if (!firebaseConfig.has("applicationId")) {
+            throw new IllegalStateException("'android.firebase.applicationId' is missing");
+        }
 
-        final String firebaseApiKey = firebaseConfig.has("apiKey") ? firebaseConfig.get("apiKey").getAsString() : null;
-        final String firebaseAppId = firebaseConfig.has("applicationId") ? firebaseConfig.get("applicationId").getAsString() : null;
+        final String firebaseApiKey = firebaseConfig.get("apiKey").getAsString();
+        final String firebaseAppId = firebaseConfig.get("applicationId").getAsString();
 
-        ForgeLog.d("Firebase config set as:" + firebaseConfig.toString());
-
-        FirebaseOptions.Builder builder = new FirebaseOptions.Builder()
-                //.setProjectId("")
+        ForgeLog.d("com.parse.push Firebase config set as:" + firebaseConfig.toString());
+        return new FirebaseOptions.Builder()
                 .setApplicationId(firebaseAppId)
                 .setApiKey(firebaseApiKey)
-                //.setGcmSenderId(GCMSenderId)
-                ;
+                .build();
+    }
 
-
-        final Parse.Configuration configuration = new Parse.Configuration.Builder(ForgeApp.getApp())
-            .server(server)
-            .applicationId(applicationId)
-            .clientKey(clientKey)
-            .build();
-
-        ForgeLog.d("com.parse.push initializing with server: " + server);
-        Parse.initialize(configuration);
-
-        if (GCMSenderId != null) {
-            ParseInstallation.getCurrentInstallation().put("GCMSenderId", GCMSenderId);
+    private Parse.Configuration createParseConfig(final JsonObject config, final Context appContext) {
+        if (!config.has("server")) {
+            throw new IllegalStateException("'server' is missing");
         }
+        String server = config.get("server").getAsString();
+
+        final String applicationId = config.has("applicationId")
+                ? config.get("applicationId").getAsString()
+                : "";
+
+        final String clientKey = config.has("clientKey")
+                ? ForgeApp.configForPlugin(Constant.MODULE_NAME).get("clientKey").getAsString()
+                : null;
+
+        ForgeLog.d("com.parse.push building parse configuration for " + server);
+        return new Parse.Configuration.Builder(appContext)
+                .server(server)
+                .applicationId(applicationId)
+                .clientKey(clientKey)
+                .build();
+    }
+
+    private void initFirebase(final JsonObject config) {
+    }
+
+    private void initParse(Parse.Configuration parseConfig) {
+        ForgeLog.d("com.parse.push initializing with parse");
+        Parse.initialize(parseConfig);
 
         ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
             @Override
@@ -79,12 +113,14 @@ public class EventListener extends ForgeEventListener {
                     return;
                 }
 
-                ForgeLog.d("com.parse.push initialized successfully");
-                Object deviceToken = ParseInstallation.getCurrentInstallation().get("deviceToken");
+                Object deviceToken = ParseInstallation.getCurrentInstallation().getDeviceToken();
                 if (deviceToken == null) {
-                    ForgeLog.e("deviceToken is null :-(");
+                    deviceToken = ParseInstallation.getCurrentInstallation().getDeviceToken();
+                    ForgeLog.e("com.parse.push deviceToken is null :-( " + deviceToken);
                     return;
                 }
+
+                ForgeLog.i("com.parse.push initialized successfully, deviceToken: " + deviceToken);
 
                 ParsePush.subscribeInBackground("", new SaveCallback() {
                     @Override
@@ -94,13 +130,13 @@ public class EventListener extends ForgeEventListener {
                             e.printStackTrace();
                             return;
                         }
-                        ForgeLog.d("com.parse.push successfully subscribed to the broadcast channel.");
+                        ForgeLog.i("com.parse.push successfully subscribed to the broadcast channel.");
                     }
                 });
             }
         });
 
-        ForgeLog.i("Initializing Parse and subscribing to default channel.");
+        ForgeLog.i("com.parse.push Initializing Parse and subscribing to default channel ...");
     }
 
 

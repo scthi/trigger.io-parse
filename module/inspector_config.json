@@ -2,8 +2,9 @@
     "this_module": {
         "config": {
             "delayRegistration": true,
-            "server": "http://docker.trigger.io:1337/parse/",
-            "applicationId": "45732VjSzMiN8HN90ztWcSeEl05T92XUrE70MJgI",
+            "server": "https://push-t1.staffbase.com/tcorp/",
+            "applicationId": "Uqv81qzENxbLUhGeSNWI1z400lv0XGPZi5LMG6D4Xl",
+            "clientKey": "3JeUDeqkDedb8cwCqJFfhu2b44XMcFMPiQwsBsm2ke",
             "android": {
                 "24": "fixtures/sb_parse/icons/24.png",
                 "36": "fixtures/sb_parse/icons/36.png",
@@ -15,8 +16,8 @@
                 "updateNotifications": true,
                 "showNotificationsWhileVisible": true,
                 "firebase": {
-                    "apiKey": "AIzaSyCmBw72yy_2RhxPRHipqsq4hvpIy7VtnQM",
-                    "applicationId": "1:545578024019:android:b3b93ea3cfe98586"
+                    "apiKey": "AIzaSyC7ikNcl8AiPP7Yaf_xLGzHsLx5lOuLoIk",
+                    "applicationId": "1:136469208804:android:b3b93ea3cfe98586"
                 }
             }
         }

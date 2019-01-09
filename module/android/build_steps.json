@@ -196,7 +196,7 @@
     { "do": { "android_add_proguard_rule": "-dontwarn com.parse.**" } },
     { "do": { "android_add_proguard_rule": "-keep class com.parse.** { *; }" } },
     { "do": {
-        "android_add_gradle_dependency": "com.google.firebase:firebase-messaging:17.3.0"
+        "android_add_gradle_dependency": "com.google.firebase:firebase-messaging:17.3.4"
     } },
     { "do": {
         "android_add_gradle_dependency": "com.github.parse-community.Parse-SDK-Android:parse:1.18.5"
