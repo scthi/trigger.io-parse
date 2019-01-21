@@ -198,38 +198,40 @@ public class ForgePushBroadcastReceiver extends ParsePushBroadcastReceiver {
         }
     }
 
+    /**
+     * Checks if the given notificationID was already within the last 10 notifications.
+     *
+     * @param context - application context
+     * @param notificationID - the notificationID to check
+     * @return true whether the notificationID was already encounter recently. false otherwise
+     */
     private boolean checkDuplicate(Context context, @Nullable String notificationID) {
-        try {
-            if (notificationID == null) {
-                ForgeLog.e("com.parse.push Received notification without notificationID");
-                return false;
-            }
-
-            SharedPreferences sharedPrefs = context.getSharedPreferences(PREFS_ID, Context.MODE_PRIVATE);
-            if (sharedPrefs == null) {
-                ForgeLog.e("com.parse.push Unable to obtain SharedPreferences");
-                return false;
-            }
-
-            String notificationIDsStr = sharedPrefs.getString(RECENT_NOTIFICATION_IDS, "");
-            List<String> notificationIDs = new ArrayList<>(Arrays.asList(notificationIDsStr.split(",")));
-            if (notificationIDs.contains(notificationID)) {
-                ForgeLog.w("com.parse.push Found duplicate notification (notificationID=" + notificationID + ")");
-                return true;
-            }
-
-            while (notificationIDs.size() >= PUSH_IDS_MAX_SIZE) {
-                notificationIDs.remove(0);
-            }
-
-            notificationIDs.add(notificationID);
-            sharedPrefs.edit().putString(RECENT_NOTIFICATION_IDS, Joiner.on(",").join(notificationIDs)).apply();
-
-            ForgeLog.d("com.parse.push No duplicate");
-            return false;
-        } catch (Exception ex) {
-            ForgeLog.e("com.parse.push Mähhh");
+        if (notificationID == null) {
+            ForgeLog.e("com.parse.push Received notification without notificationID");
             return false;
         }
+
+        SharedPreferences sharedPrefs = context.getSharedPreferences(PREFS_ID, Context.MODE_PRIVATE);
+        if (sharedPrefs == null) {
+            ForgeLog.e("com.parse.push Unable to obtain SharedPreferences");
+            return false;
+        }
+
+        String notificationIDsStr = sharedPrefs.getString(RECENT_NOTIFICATION_IDS, "");
+        List<String> notificationIDs = new ArrayList<>(Arrays.asList(notificationIDsStr.split(",")));
+        if (notificationIDs.contains(notificationID)) {
+            ForgeLog.w("com.parse.push Found duplicate notification (notificationID=" + notificationID + ")");
+            return true;
+        }
+
+        while (notificationIDs.size() >= PUSH_IDS_MAX_SIZE) {
+            notificationIDs.remove(0);
+        }
+
+        notificationIDs.add(notificationID);
+        sharedPrefs.edit().putString(RECENT_NOTIFICATION_IDS, Joiner.on(",").join(notificationIDs)).apply();
+
+        ForgeLog.d("com.parse.push No duplicate notification detected (notificationID=" + notificationID + ")");
+        return false;
     }
 }
