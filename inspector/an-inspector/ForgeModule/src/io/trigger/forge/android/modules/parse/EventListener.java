@@ -42,8 +42,9 @@ public class EventListener extends ForgeEventListener {
                 @Override
                 public void onComplete(@NonNull Task<InstanceIdResult> task) {
                     // the deviceToken is available -> init parse
-                    ForgeLog.d("com.parse.push obtained deviceToken: " + task.getResult().getToken());
-                    initParse(parseConfig);
+                    String deviceToken = task.getResult().getToken();
+                    ForgeLog.d("com.parse.push obtained deviceToken: " + deviceToken);
+                    initParse(parseConfig, deviceToken);
                 }
             });
 
@@ -97,12 +98,10 @@ public class EventListener extends ForgeEventListener {
                 .build();
     }
 
-    private void initFirebase(final JsonObject config) {
-    }
-
-    private void initParse(Parse.Configuration parseConfig) {
+    private void initParse(Parse.Configuration parseConfig, final String deviceToken) {
         ForgeLog.d("com.parse.push initializing with parse");
         Parse.initialize(parseConfig);
+        ParseInstallation.getCurrentInstallation().setDeviceToken(deviceToken);
 
         ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
             @Override
@@ -113,14 +112,14 @@ public class EventListener extends ForgeEventListener {
                     return;
                 }
 
-                Object deviceToken = ParseInstallation.getCurrentInstallation().getDeviceToken();
-                if (deviceToken == null) {
-                    deviceToken = ParseInstallation.getCurrentInstallation().getDeviceToken();
-                    ForgeLog.e("com.parse.push deviceToken is null :-( " + deviceToken);
+                String parseDeviceToken = ParseInstallation.getCurrentInstallation().getDeviceToken();
+                if (parseDeviceToken == null) {
+                    parseDeviceToken = ParseInstallation.getCurrentInstallation().getDeviceToken();
+                    ForgeLog.e("com.parse.push deviceToken is null :-( " + parseDeviceToken);
                     return;
                 }
 
-                ForgeLog.i("com.parse.push initialized successfully, deviceToken: " + deviceToken);
+                ForgeLog.i("com.parse.push initialized successfully, deviceToken: " + parseDeviceToken);
 
                 ParsePush.subscribeInBackground("", new SaveCallback() {
                     @Override
