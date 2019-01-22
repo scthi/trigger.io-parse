@@ -80,14 +80,18 @@ public class ForgePushBroadcastReceiver extends ParsePushBroadcastReceiver {
     @Override
     public void onPushOpen(Context context, final Intent intent) {
 
-        // wait until Parse is initialized otherwise a NPE can happen
-        Parse.registerParseCallbacks(new Parse.ParseCallbacks() {
-            @Override
-            public void onParseInitialized() {
-                ParseAnalytics.trackAppOpenedInBackground(intent);
-                Parse.unregisterParseCallbacks(this);
-            }
-        });
+        if (Parse.isInitialized()) {
+            ParseAnalytics.trackAppOpenedInBackground(intent);
+        } else {
+            // wait until Parse is initialized otherwise a NPE can happen
+            Parse.registerParseCallbacks(new Parse.ParseCallbacks() {
+                @Override
+                public void onParseInitialized() {
+                    ParseAnalytics.trackAppOpenedInBackground(intent);
+                    Parse.unregisterParseCallbacks(this);
+                }
+            });
+        }
 
         // can't we just call super?
         Intent activity = new Intent(context, ForgeActivity.class);
