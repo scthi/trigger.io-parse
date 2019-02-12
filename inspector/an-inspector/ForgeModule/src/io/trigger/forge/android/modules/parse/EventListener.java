@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -41,10 +42,17 @@ public class EventListener extends ForgeEventListener {
             instanceIdTask.addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                 @Override
                 public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                    // the deviceToken is available -> init parse
-                    String deviceToken = task.getResult().getToken();
-                    ForgeLog.d("com.parse.push obtained deviceToken: " + deviceToken);
-                    initParse(parseConfig, deviceToken);
+                    try {
+                        // the deviceToken is available -> init parse
+                        String deviceToken = task.getResult().getToken();
+                        ForgeLog.d("com.parse.push obtained deviceToken: " + deviceToken);
+                        initParse(parseConfig, deviceToken);
+                    } catch (RuntimeExecutionException ex) {
+                        // this could happen due missing internet connection
+                        // or general firebase service unavailability (SERVICE_NOT_AVAILABLE)
+                        // -> simply do nothing and let the process be restarted on next app launch
+                        ForgeLog.e("com.parse.push unable to obtain deviceToken: " + ex);
+                    }
                 }
             });
 
