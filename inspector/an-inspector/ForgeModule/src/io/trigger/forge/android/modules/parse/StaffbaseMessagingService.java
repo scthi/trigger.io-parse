@@ -12,17 +12,13 @@ public class StaffbaseMessagingService extends ParseFirebaseMessagingService {
 
     @Override
     public void onMessageReceived(final RemoteMessage remoteMessage) {
-
-        ForgeLog.i("com.parse.push onMessageReceived");
-
         if (EventListener.isInitialized()) {
-            ForgeLog.i("com.parse.push process message");
             super.onMessageReceived(remoteMessage);
         } else {
+            ForgeLog.i("com.parse.push onMessageReceived -- wait for initialization");
             EventListener.addOnInitializedListener(new Handler.Callback() {
                 @Override
                 public boolean handleMessage(Message msg) {
-                    ForgeLog.i("com.parse.push process message");
                     StaffbaseMessagingService.super.onMessageReceived(remoteMessage);
                     return true;
                 }

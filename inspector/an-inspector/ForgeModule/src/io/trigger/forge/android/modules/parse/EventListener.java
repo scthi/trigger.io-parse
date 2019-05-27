@@ -38,23 +38,27 @@ public class EventListener extends ForgeEventListener {
         return initialized;
     }
 
-    private static List<Handler> initializationListeners = new CopyOnWriteArrayList<>();
+    private static List<Handler> initializationHandlers = new CopyOnWriteArrayList<>();
 
     private static synchronized void setInitialized() {
         if (initialized) {
             return;
         }
-        initialized = true;
-        for (final Handler h: initializationListeners) {
-            h.dispatchMessage(new Message());
+        for (final Handler handler: initializationHandlers) {
+            try {
+                handler.dispatchMessage(new Message());
+            } catch (final Exception e) {
+                ForgeLog.e("com.parse.push error on calling initialization listener: " + e);
+            }
         }
+        initialized = true;
     }
 
     public static synchronized void addOnInitializedListener(final Handler.Callback callback) {
         if (isInitialized()) {
             callback.handleMessage(new Message());
         } else {
-            initializationListeners.add(new Handler(Looper.getMainLooper(), callback));
+            initializationHandlers.add(new Handler(Looper.getMainLooper(), callback));
         }
     }
 
@@ -66,8 +70,9 @@ public class EventListener extends ForgeEventListener {
             // build configurations (fail fast if something is wrong)
             final JsonObject config = ForgeApp.configForPlugin(Constant.MODULE_NAME);
             final Context appContext = ForgeApp.getApp();
-            final FirebaseOptions firebaseOptions = createFirebaseOptions(config);
+
             final Parse.Configuration parseConfig = createParseConfig(config, appContext);
+            Parse.initialize(parseConfig);
 
 
             ForgeLog.i("com.parse.push --- start sleep 1 ---");
@@ -76,6 +81,7 @@ public class EventListener extends ForgeEventListener {
                 @Override
                 public void run() {
                     ForgeLog.i("com.parse.push --- stop sleep 1 ---");
+                    final FirebaseOptions firebaseOptions = createFirebaseOptions(config);
                     onApplicationCreate_2(firebaseOptions, parseConfig);
                 }
             }, 5000);
@@ -116,7 +122,12 @@ public class EventListener extends ForgeEventListener {
                                     @Override
                                     public void run() {
                                         ForgeLog.i("com.parse.push --- stop sleep 3 ---");
-                                        initParse(parseConfig, deviceToken);
+                                        updateDeviceToken(deviceToken);
+
+                                        /**
+                                         * The whole initialization is done, mark as initialized.
+                                         */
+                                        setInitialized();
                                     }
                                 }, 5000);
 
@@ -181,15 +192,10 @@ public class EventListener extends ForgeEventListener {
                 .build();
     }
 
-    private void initParse(Parse.Configuration parseConfig, final String deviceToken) {
-        ForgeLog.d("com.parse.push initializing with parse");
-        Parse.initialize(parseConfig);
+    private void updateDeviceToken(final String deviceToken) {
+        ForgeLog.d("com.parse.push update device token");
 
         ParseInstallation.getCurrentInstallation().setDeviceToken(deviceToken);
-
-
-        setInitialized();
-
         ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -224,7 +230,6 @@ public class EventListener extends ForgeEventListener {
 
         ForgeLog.i("com.parse.push Initializing Parse and subscribing to default channel ...");
     }
-
 
     @Override
     public void onNewIntent(Intent intent) {
