@@ -3,6 +3,8 @@ package io.trigger.forge.android.modules.parse;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,11 +23,41 @@ import com.parse.ParsePush;
 import com.parse.SaveCallback;
 import com.parse.VisibilityManager;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import io.trigger.forge.android.core.ForgeApp;
 import io.trigger.forge.android.core.ForgeEventListener;
 import io.trigger.forge.android.core.ForgeLog;
 
 public class EventListener extends ForgeEventListener {
+
+    private static boolean initialized = false;
+
+    public static boolean isInitialized() {
+        return initialized;
+    }
+
+    private static List<Handler> initializationListeners = new CopyOnWriteArrayList<>();
+
+    private static synchronized void setInitialized() {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
+        for (final Handler h: initializationListeners) {
+            h.dispatchMessage(new Message());
+        }
+    }
+
+    public static synchronized void addOnInitializedListener(final Handler.Callback callback) {
+        if (isInitialized()) {
+            callback.handleMessage(new Message());
+        } else {
+            initializationListeners.add(new Handler(Looper.getMainLooper(), callback));
+        }
+    }
+
     @Override
     public void onApplicationCreate() {
         try {
@@ -152,7 +184,11 @@ public class EventListener extends ForgeEventListener {
     private void initParse(Parse.Configuration parseConfig, final String deviceToken) {
         ForgeLog.d("com.parse.push initializing with parse");
         Parse.initialize(parseConfig);
+
         ParseInstallation.getCurrentInstallation().setDeviceToken(deviceToken);
+
+
+        setInitialized();
 
         ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
             @Override
