@@ -2,6 +2,7 @@ package io.trigger.forge.android.modules.parse;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,25 +37,67 @@ public class EventListener extends ForgeEventListener {
             final FirebaseOptions firebaseOptions = createFirebaseOptions(config);
             final Parse.Configuration parseConfig = createParseConfig(config, appContext);
 
+
+            ForgeLog.i("com.parse.push --- start sleep 1 ---");
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ForgeLog.i("com.parse.push --- stop sleep 1 ---");
+                    onApplicationCreate_2(firebaseOptions, parseConfig);
+                }
+            }, 5000);
+        } catch (Exception ex) {
+            // In case of unexpected exception, we want to log it and pass it up
+            ForgeLog.e("com.parse.push onApplicationCreate failed: " + ex);
+            throw ex;
+        }
+    }
+
+    private void onApplicationCreate_2(
+            final FirebaseOptions firebaseOptions, final Parse.Configuration parseConfig) {
+        try {
+            ForgeLog.d("com.parse.push onApplicationCreate_2");
+
             // init Firebase and wait until deviceToken is available
             FirebaseApp firebaseApp = FirebaseApp.initializeApp(ForgeApp.getApp(), firebaseOptions);
-            Task<InstanceIdResult> instanceIdTask = FirebaseInstanceId.getInstance().getInstanceId();
-            instanceIdTask.addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            final Task<InstanceIdResult> instanceIdTask = FirebaseInstanceId.getInstance().getInstanceId();
+
+            ForgeLog.i("com.parse.push --- start sleep 2---");
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
                 @Override
-                public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                    try {
-                        // the deviceToken is available -> init parse
-                        String deviceToken = task.getResult().getToken();
-                        ForgeLog.d("com.parse.push obtained deviceToken: " + deviceToken);
-                        initParse(parseConfig, deviceToken);
-                    } catch (RuntimeExecutionException ex) {
-                        // this could happen due missing internet connection
-                        // or general firebase service unavailability (SERVICE_NOT_AVAILABLE)
-                        // -> simply do nothing and let the process be restarted on next app launch
-                        ForgeLog.e("com.parse.push unable to obtain deviceToken: " + ex);
-                    }
+                public void run() {
+                    ForgeLog.i("com.parse.push --- stop sleep 2 ---");
+
+                    instanceIdTask.addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            try {
+                                // the deviceToken is available -> init parse
+                                final String deviceToken = task.getResult().getToken();
+                                ForgeLog.d("com.parse.push obtained deviceToken: " + deviceToken);
+
+                                ForgeLog.i("com.parse.push --- start sleep 3 ---");
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ForgeLog.i("com.parse.push --- stop sleep 3 ---");
+                                        initParse(parseConfig, deviceToken);
+                                    }
+                                }, 5000);
+
+                            } catch (RuntimeExecutionException ex) {
+                                // this could happen due missing internet connection
+                                // or general firebase service unavailability (SERVICE_NOT_AVAILABLE)
+                                // -> simply do nothing and let the process be restarted on next app launch
+                                ForgeLog.e("com.parse.push unable to obtain deviceToken: " + ex);
+                            }
+                        }
+                    });
                 }
-            });
+            }, 5000);
 
         } catch (Exception ex) {
             // In case of unexpected exception, we want to log it and pass it up
