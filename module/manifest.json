@@ -1,5 +1,5 @@
 {
-    "changes": "* Added some sleeps and logs to insepct bug RE-492. ==> DO NOT USE IN PRODUCTION!",
+    "changes": "* Fixed NPE on using parse from a firebase message event without installation.",
     "dependencies": {
         "bolts": {
             "minimum_version": "1.6.0",
@@ -10,5 +10,5 @@
     "min_platform_version": "v2.7.4",
     "namespace": "parse",
     "platform_version": "v2.7.4",
-    "version": "3.3.11"
+    "version": "3.3.12"
 }

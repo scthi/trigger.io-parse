@@ -8,6 +8,10 @@ import com.parse.fcm.ParseFirebaseMessagingService;
 
 import io.trigger.forge.android.core.ForgeLog;
 
+/**
+ * Overridden messaging service, which is aware that forge/parse has been initialized successfully
+ * before handling notifications (see: https://mitarbeiterapp.atlassian.net/browse/RE-492).
+ */
 public class StaffbaseMessagingService extends ParseFirebaseMessagingService {
 
     @Override
