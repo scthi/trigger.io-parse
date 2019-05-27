@@ -51,7 +51,7 @@ public class EventListener extends ForgeEventListener {
     private static List<Handler> initializationHandlers = new CopyOnWriteArrayList<>();
 
     /**
-     * Sets the global initalized flag to true and informs all on-initialization listeners.
+     * Sets the global initialized flag to true and informs all on-initialization listeners.
      */
     private static synchronized void setInitialized() {
         if (initialized) {
