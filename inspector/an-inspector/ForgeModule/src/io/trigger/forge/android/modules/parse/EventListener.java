@@ -2,6 +2,9 @@ package io.trigger.forge.android.modules.parse;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,11 +23,63 @@ import com.parse.ParsePush;
 import com.parse.SaveCallback;
 import com.parse.VisibilityManager;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import io.trigger.forge.android.core.ForgeApp;
 import io.trigger.forge.android.core.ForgeEventListener;
 import io.trigger.forge.android.core.ForgeLog;
 
 public class EventListener extends ForgeEventListener {
+
+    /**
+     * Flag which inidcates if forge, parse and firebase has been initialized.
+     */
+    private static boolean initialized = false;
+
+    /**
+     * @return True, if all necessary components have been initialized
+     *      (forge, parse and firebase), false otherwise.
+     */
+    public static boolean isInitialized() {
+        return initialized;
+    }
+
+    /**
+     * Holds all handlers which will be informed after initialization.
+     */
+    private static List<Handler> initializationHandlers = new CopyOnWriteArrayList<>();
+
+    /**
+     * Sets the global initialized flag to true and informs all on-initialization listeners.
+     */
+    private static synchronized void setInitialized() {
+        if (initialized) {
+            return;
+        }
+        for (final Handler handler: initializationHandlers) {
+            try {
+                handler.dispatchMessage(new Message());
+            } catch (final Exception e) {
+                ForgeLog.e("com.parse.push error on calling initialization listener: " + e);
+            }
+        }
+        ForgeLog.i("com.parse.push finished initialization of firebase");
+        initialized = true;
+    }
+
+    /**
+     * Adds a new callback which will be called after successful initialization
+     * (with an empty, dummy message).
+     */
+    public static synchronized void addOnInitializedListener(final Handler.Callback callback) {
+        if (isInitialized()) {
+            callback.handleMessage(new Message());
+        } else {
+            initializationHandlers.add(new Handler(Looper.getMainLooper(), callback));
+        }
+    }
+
     @Override
     public void onApplicationCreate() {
         try {
@@ -33,20 +88,28 @@ public class EventListener extends ForgeEventListener {
             // build configurations (fail fast if something is wrong)
             final JsonObject config = ForgeApp.configForPlugin(Constant.MODULE_NAME);
             final Context appContext = ForgeApp.getApp();
-            final FirebaseOptions firebaseOptions = createFirebaseOptions(config);
-            final Parse.Configuration parseConfig = createParseConfig(config, appContext);
 
-            // init Firebase and wait until deviceToken is available
-            FirebaseApp firebaseApp = FirebaseApp.initializeApp(ForgeApp.getApp(), firebaseOptions);
-            Task<InstanceIdResult> instanceIdTask = FirebaseInstanceId.getInstance().getInstanceId();
-            instanceIdTask.addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            final Parse.Configuration parseConfig = createParseConfig(config, appContext);
+            Parse.initialize(parseConfig);
+
+            ForgeLog.i("com.parse.push start initialization of firebase");
+            final FirebaseOptions firebaseOptions = createFirebaseOptions(config);
+            FirebaseApp.initializeApp(ForgeApp.getApp(), firebaseOptions);
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                 @Override
                 public void onComplete(@NonNull Task<InstanceIdResult> task) {
                     try {
                         // the deviceToken is available -> init parse
-                        String deviceToken = task.getResult().getToken();
+                        final String deviceToken = task.getResult().getToken();
                         ForgeLog.d("com.parse.push obtained deviceToken: " + deviceToken);
-                        initParse(parseConfig, deviceToken);
+
+                        updateDeviceToken(deviceToken);
+
+                        /**
+                         * The whole initialization is done, mark as initialized.
+                         */
+                        setInitialized();
+
                     } catch (RuntimeExecutionException ex) {
                         // this could happen due missing internet connection
                         // or general firebase service unavailability (SERVICE_NOT_AVAILABLE)
@@ -106,11 +169,10 @@ public class EventListener extends ForgeEventListener {
                 .build();
     }
 
-    private void initParse(Parse.Configuration parseConfig, final String deviceToken) {
-        ForgeLog.d("com.parse.push initializing with parse");
-        Parse.initialize(parseConfig);
-        ParseInstallation.getCurrentInstallation().setDeviceToken(deviceToken);
+    private void updateDeviceToken(final String deviceToken) {
+        ForgeLog.d("com.parse.push update device token");
 
+        ParseInstallation.getCurrentInstallation().setDeviceToken(deviceToken);
         ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -145,7 +207,6 @@ public class EventListener extends ForgeEventListener {
 
         ForgeLog.i("com.parse.push Initializing Parse and subscribing to default channel ...");
     }
-
 
     @Override
     public void onNewIntent(Intent intent) {

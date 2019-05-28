@@ -120,7 +120,7 @@ public class ForgePushBroadcastReceiver extends ParsePushBroadcastReceiver {
         }
 
         JSONObject data = getPushData(intent);
-        String notificationID = data.optString("notificationID");
+        String notificationID = data.optString("notificationID", null);
         if (checkDuplicate(context, notificationID)) {
             return null;
         }

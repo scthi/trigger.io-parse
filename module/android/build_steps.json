@@ -107,7 +107,7 @@
                 "element": {
                     "tag": "service",
                     "attributes": {
-                        "android:name": "com.parse.fcm.ParseFirebaseMessagingService"
+                        "android:name": "io.trigger.forge.android.modules.parse.StaffbaseMessagingService"
                     },
                     "children": [{
                         "tag": "intent-filter",
