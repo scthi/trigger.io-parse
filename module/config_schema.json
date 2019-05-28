@@ -32,7 +32,7 @@
 		},
 		"android": {
 			"title": "Android",
-			"_order": 50,
+			"_order": 60,
 			"required": true,
 			"type": "object",
 			"additionalProperties": false,
@@ -104,6 +104,29 @@
 					"required": false,
 					"type": "string",
 					"_filepicker": true
+				},
+				"firebase": {
+					"title": "Firebase",
+					"_order": 60,
+					"required": false,
+					"type": "object",
+					"additionalProperties": false,
+					"description": "Firebase specific settings",
+					"properties": {
+						"applicationId": {
+							"_order": 50,
+							"type": "string",
+							"required": false,
+							"title": "Application ID",
+							"description": "The Application ID provided by firebase for the application."
+						},
+						"apiKey": {
+							"_order": 51,
+							"type": "string",
+							"required": false,
+							"title": "API Key"
+						}
+					}
 				}
 			}
 		}

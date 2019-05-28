@@ -2,19 +2,23 @@
     "this_module": {
         "config": {
             "delayRegistration": true,
-            "server": "http://docker.trigger.io:1337/parse/",
-            "applicationId": "45732VjSzMiN8HN90ztWcSeEl05T92XUrE70MJgI",
+            "server": "https://push-t1.staffbase.com/tcorp/",
+            "applicationId": "Uqv81qzENxbLUhGeSNWI1z400lv0XGPZi5LMG6D4Xl",
+            "clientKey": "3JeUDeqkDedb8cwCqJFfhu2b44XMcFMPiQwsBsm2ke",
             "android": {
-                "24": "fixtures/parse/icons/24.png",
-                "36": "fixtures/parse/icons/36.png",
-                "48": "fixtures/parse/icons/48.png",
-                "72": "fixtures/parse/icons/72.png",
-                "96": "fixtures/parse/icons/96.png",
+                "24": "fixtures/sb_parse/icons/24.png",
+                "36": "fixtures/sb_parse/icons/36.png",
+                "48": "fixtures/sb_parse/icons/48.png",
+                "72": "fixtures/sb_parse/icons/72.png",
+                "96": "fixtures/sb_parse/icons/96.png",
                 "notification_icon": "custom_push_icon",
                 "background-color": "#5555ff",
-                "GCMsenderID": "677378418801",
                 "updateNotifications": true,
-                "showNotificationsWhileVisible": true
+                "showNotificationsWhileVisible": true,
+                "firebase": {
+                    "apiKey": "AIzaSyC7ikNcl8AiPP7Yaf_xLGzHsLx5lOuLoIk",
+                    "applicationId": "1:136469208804:android:b3b93ea3cfe98586"
+                }
             }
         }
     },

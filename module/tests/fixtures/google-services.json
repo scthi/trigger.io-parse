@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "545578024019",
+    "firebase_url": "https://app-tcorp.firebaseio.com",
+    "project_id": "app-tcorp",
+    "storage_bucket": "app-tcorp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545578024019:android:b3b93ea3cfe98586",
+        "android_client_info": {
+          "package_name": "rocks.staffbase.tcorp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "545578024019-pjdri955n09im3v3e8uqr16me22gnlk3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmBw72yy_2RhxPRHipqsq4hvpIy7VtnQM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
