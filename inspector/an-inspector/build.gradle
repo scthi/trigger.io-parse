@@ -7,7 +7,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:3.1.4"
+        classpath "com.android.tools.build:gradle:3.5.0"
+        classpath "com.google.gms:google-services:4.3.2"
     }
     System.properties["com.android.build.gradle.overrideVersionCheck"] = "true"
 }
@@ -35,17 +36,20 @@ allprojects {
 }
 
 ext {
-    compileSdkVersion = 28
-    buildToolsVersion = "28.0.2"
-    supportLibraryVersion = "28.0.0"
-    crosswalkVersion = "23.53.589.4"
+    dependencies = [
+        "androidx.legacy:legacy-support-v4:1.0.0",
+        "com.google.guava:guava:28.0-android",
+    ]
+
+    buildToolsVersion = "29.0.2"
 
     minSdkVersion = moduleMinSdkVersion() ?: 14
-    targetSdkVersion = 28
+    compileSdkVersion = 29
+    targetSdkVersion = 29
 
     compileOptions = {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     debug = {
@@ -53,15 +57,19 @@ ext {
         minifyEnabled false
         shrinkResources false
     }
+
     release = {
         debuggable false
         minifyEnabled true
         shrinkResources false
     }
+
+    crosswalkVersion = "23.53.589.4"
+    supportLibraryVersion = "28.0.0"
 }
 
 wrapper {
-    gradleVersion = "4.9"
+    gradleVersion = "5.6.2"
 }
 
 task getHomeDir doLast {
@@ -75,6 +83,17 @@ def moduleDependencies() {
         def jsonSlurper = new JsonSlurper()
         def config = jsonSlurper.parseText(f.text)
         config["dependencies"] ?: []
+    } else {
+        []
+    }
+}
+
+def moduleGradlePlugins() {
+    def f = new File("ForgeInspector/gradle.json")
+    if (f.exists()) {
+        def jsonSlurper = new JsonSlurper()
+        def config = jsonSlurper.parseText(f.text)
+        config["gradlePlugins"] ?: []
     } else {
         []
     }
@@ -101,6 +120,7 @@ def moduleManifestPlaceholders() {
         [:]
     }
 }
+
 
 def moduleMinSdkVersion() {
     def f = new File("ForgeInspector/gradle.json")

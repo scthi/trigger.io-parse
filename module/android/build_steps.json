@@ -187,7 +187,7 @@
             }
         }
     },
-   
+
     { "do": { "android_add_permission": { "permission": "android.permission.VIBRATE" } } },
     { "do": { "android_add_permission": { "permission": "android.permission.RECEIVE_BOOT_COMPLETED" } } },
     { "do": { "android_add_permission": { "permission": "com.google.android.c2dm.permission.RECEIVE" } } },
@@ -203,8 +203,5 @@
     } },
     { "do": {
         "android_add_gradle_dependency": "com.github.parse-community.Parse-SDK-Android:fcm:1.18.5"
-    } },
-    { "do": {
-        "android_add_gradle_exclude_jar": "bolts-android-1.1.2.jar"
     } }
 ]
