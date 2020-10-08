@@ -1,5 +1,5 @@
 {
-    "changes": "* Upgrade Trigger.io platform to `v2.8.6`\n* Update Parse iOS SDK to `1.17.2`\n* Update module to use Bolts v1.10.0 which replaces usage of UIWebView with WKWebView",
+    "changes": "* Update Parse Android SDK to 1.20.0",
     "dependencies": {
         "bolts": {
             "minimum_version": "1.10.0",
@@ -10,5 +10,5 @@
     "min_platform_version": "v2.8.6",
     "namespace": "parse",
     "platform_version": "v2.8.6",
-    "version": "3.4.0"
+    "version": "3.5.8"
 }
