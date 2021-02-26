@@ -17,13 +17,6 @@ android {
         vanilla {
             dimension "default"
         }
-        crosswalk {
-            dimension "default"
-            minSdkVersion moduleMinSdkVersion() ?: 16
-            ndk {
-                abiFilters "armeabi-v7a", ""
-            }
-        }
     }
 
     sourceSets {
@@ -36,9 +29,6 @@ android {
             res.srcDirs = ["res"]
             assets.srcDirs = ["assets"]
             jniLibs.srcDirs = ["libs"]
-        }
-        crosswalk {
-            java.srcDirs = ["flavors/crosswalk/src"]
         }
         vanilla {
             java.srcDirs = ["flavors/vanilla/src"]
@@ -67,12 +57,16 @@ dependencies {
 
     implementation rootProject.ext.dependencies
 
-    crosswalkImplementation "org.xwalk:xwalk_core_library:" + rootProject.ext.crosswalkVersion
-
     vanillaImplementation (name:"ForgeCore-vanilla-debug", ext:"aar")
-    crosswalkImplementation (name:"ForgeCore-crosswalk-debug", ext:"aar")
 
     implementation moduleDependencies()
+
+    fileTree(dir: "libs", include: "**/*-vanilla-release.aar")
+    .each { File file ->
+        def name = file.name.lastIndexOf(".").with { it != -1 ? file.name[0..<it] : file.name }
+        dependencies.add("vanillaImplementation", [name: name , ext: "aar"])
+        println "Added module aar for vanilla: $name"
+    }
 }
 
 repositories{
@@ -98,25 +92,5 @@ task updateModule (dependsOn: ":ForgeModule:assembleRelease") {
         }
         println "\tUpdated module/android/ForgeModule-vanilla-release.aar"
 
-        copy {
-            from "build/outputs/aar/ForgeModule-crosswalk-release.aar"
-            into "../../../module/android"
-        }
-        println "\tUpdated module/android/ForgeModule-crosswalk-release.aar\n"
-    }
-}
-
-// Force Android support library version for Crosswalk builds
-configurations.all { conf ->
-    if (conf.name.contains("crosswalk")) {
-        println "Munging support library for: " + conf.name
-        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-            def requested = details.requested
-            if (requested.group == "com.android.support") {
-                if (!requested.name.startsWith("multidex")) {
-                    details.useVersion rootProject.ext.supportLibraryVersion
-                }
-            }
-        }
     }
 }
