@@ -1,5 +1,5 @@
 {
-    "changes": "* Update Parse Android SDK to 1.20.0",
+    "changes": "* rebuild for latest Trigger platform_version",
     "dependencies": {
         "bolts": {
             "minimum_version": "1.10.0",
@@ -7,8 +7,8 @@
         }
     },
     "description": "Parse.com configuration to enable push notifications.\n\nThe parse module uses the Parse.com SDK to allow for native push notifications.",
-    "min_platform_version": "v2.8.6",
+    "min_platform_version": "v2.9.1",
     "namespace": "parse",
-    "platform_version": "v2.8.6",
-    "version": "3.5.8"
+    "platform_version": "v2.9.1",
+    "version": "3.6.0"
 }
